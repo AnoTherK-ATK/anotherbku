@@ -23,8 +23,6 @@ public:
     virtual string toString() const = 0;
 };
 
-
-
 bool isPrime(int x){
 	if(x < 2) return false;
 	for(int i = 2; i * i <= x; ++i){
@@ -187,88 +185,6 @@ public:
 		knightType = NORMAL;
 	}
 };
-
-
-
-class PhoenixDownI: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNI;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() <= 0)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		knight -> setHp(knight -> getMaxHp());
-	}
-	ItemType getType(){
-		return type;
-	}
-};
-
-class PhoenixDownII: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNII;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() < knight -> getMaxHp() / 4)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		knight -> setHp(knight -> getMaxHp());
-	}
-	ItemType getType(){
-		return type;
-	}
-};
-
-class PhoenixDownIII: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNIII;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() < knight -> getMaxHp() / 3)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		if(knight -> getHp() <= 0)
-			knight -> setHp(knight -> getMaxHp() / 3);
-		else
-			knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 4);
-	}
-	ItemType getType(){
-		return type;
-	}
-};
-
-class PhoenixDownIV: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNIV;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() < knight -> getMaxHp() / 2)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		if(knight -> getHp() <= 0)
-			knight -> setHp(knight -> getMaxHp() / 2);
-		else
-			knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 5);
-	}
-	ItemType getType(){
-		return type;
-	}
-};
-
-
 
 struct Node{
 	BaseItem* item;
@@ -578,7 +494,8 @@ enum OpponentType {
 	NINA = 8, 
 	DURIAN = 9, 
 	OMEGA = 10, 
-	HADES = 11
+	HADES = 11,
+	ULTIMECIA = 99
 };
 
 class BaseOpponent{
@@ -704,6 +621,32 @@ public:
 	}
 };
 
+class Ultimecia: public BaseOpponent{
+private:
+	int hp;
+	OpponentType type;
+public:
+	Ultimecia(){
+		hp = 5000;
+		type = ULTIMECIA;
+	}
+	int getHp(){
+		return hp;
+	}
+	void setHp(int x){
+		hp = x;
+	}
+	int getType(){
+		return type;
+	}
+	int getBaseDmg(){
+		return 0;
+	}
+	int getGil(){
+		return 0;
+	}
+};
+
 class Events {
 private:
 	int *eventList;
@@ -736,7 +679,7 @@ class ArmyKnights {
 private:
 	int cnt;
 	BaseKnight* knightList[1005];
-	bool defeatUlti = 0;
+	int defeatUlti = 0;
 	bool hasSheild = 0;
 	bool hasLance = 0;
 	bool hasHair = 0;
@@ -794,19 +737,115 @@ public:
 		else 
 			return new NormalKnight(knightList[idx]);
 	}
-	bool meet1To5(BaseOpponent * opponent){
+	int meet1To5(BaseOpponent * opponent, int i, int id){
 		BaseKnight * knight = lastKnight();
+		BaseOpponent * oppo;
+		if(knight -> getLevel() >= getLvl0(id, i))
+			return opponent -> getGil();
+		else{
+			knight -> setHp(knight -> getHp() - getDmg(opponent -> getBaseDmg(), knight -> getLevel(), id, i));  
+			BaseItem *tmp;
+
+			if(knight -> getGil() >= 100){
+				int tmp = knight -> setGil(-100);
+				knight -> setHp(knight -> getMaxHp() / 2);
+				return 0;
+			}else
+				return -1;
+		}
+	}
+
+	bool meetUltimecia(){
+		Ultimecia *opponent = new Ultimecia();
+		if(hasSword)
+			return 1;
+		if(!(hasHair && hasLance && hasSheild))
+			return 0;
+		while(lastKnight() != nullptr && opponent -> getHp() > 0){
+			BaseKnight *knight = lastKnight();
+			if(knight -> getType() == NORMAL){
+				--cnt;
+				delete knightList[cnt];
+			}else{
+				double base[3] = {0.06, 0.05, 0.075};
+				int dmg = (int)(base[knight -> getType()] * (1.0 * knight -> getLevel()) * (1.0 * knight -> getHp()));
+				opponent -> setHp(opponent -> getHp() - dmg);
+				if(opponent -> getHp() > 0){
+					--cnt;
+					delete knightList[cnt];
+				}
+			}
+		}
+		if(opponent -> getHp() > 0 || cnt == 0)
+			return 0;
+		else return 1;
 	}
 
     bool fight(BaseOpponent * opponent, int i, int id){
-		
+		if(id <= 5){
+			int gil = meet1To5(opponent, i, id);
+			if(gil >= 0){
+				addGil(gil);
+				return 1;
+			}else return 0;
+		}
 	}
     bool adventure (Events *events){
 		for(int event = 0; event < events -> count(); ++event){
+			if(events -> get(event) == 1){
+				bool ok = fight(new MadBear, event, events -> get(event));
+				if(!ok){
+					--cnt;
+					delete knightList[cnt];
+				}
+			}
+			else if(events -> get(event) == 2){
+				bool ok = fight(new Bandit, event, events -> get(event));
+				if(!ok){
+					--cnt;
+					delete knightList[cnt];
+				}
+			}else if(events -> get(event) == 3){
+				bool ok = fight(new LordLupin, event, events -> get(event));
+				if(!ok){
+					--cnt;
+					delete knightList[cnt];
+				}
+			}else if(events -> get(event) == 4){
+				bool ok = fight(new Elf, event, events -> get(event));
+				if(!ok){
+					--cnt;
+					delete knightList[cnt];
+				}
+			}else if(events -> get(event) == 5){
+				bool ok = fight(new Troll, event, events -> get(event));
+				if(!ok){
+					--cnt;
+					delete knightList[cnt];
+				}
+			}else if(events -> get(event) == 95){
+				if(!hasSheild)
+					hasSheild = 1;
+			}else if(events -> get(event) == 96){
+				if(!hasLance)
+					hasLance = 1;
+			}else if(events -> get(event) == 97){
+				if(!hasHair)
+					hasHair = 1;
+			}else if(events -> get(event) == 98){
+				if(hasLance && hasSheild && hasHair)
+					hasSword = 1;
+			}else if(events -> get(event) == 99){
+				bool ok = meetUltimecia();
+				if(ok)
+					defeatUlti = 1;
+				else 
+					defeatUlti = -1;
+			}
 			printInfo();
 		}
-		if(defeatUlti == true) return true;
-		else return false;
+		if(defeatUlti == 1) return true;
+		else if(defeatUlti == -1) return false;
 	}
     int count() const{
 		return cnt;

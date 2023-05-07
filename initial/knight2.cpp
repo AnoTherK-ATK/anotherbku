@@ -1,7 +1,83 @@
 #include "knight2.h"
 
 /* * * BEGIN implementation of class BaseBag * * */
+class PhoenixDownI: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNI;
+public:
+	bool canUse(BaseKnight * knight){
+		if(knight -> getHp() <= 0)
+			return true;
+		else
+			return false;
+	}
+	void use(BaseKnight * knight){
+		knight -> setHp(knight -> getMaxHp());
+	}
+	ItemType getType(){
+		return type;
+	}
+};
 
+class PhoenixDownII: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNII;
+public:
+	bool canUse(BaseKnight * knight){
+		if(knight -> getHp() < knight -> getMaxHp() / 4)
+			return true;
+		else
+			return false;
+	}
+	void use(BaseKnight * knight){
+		knight -> setHp(knight -> getMaxHp());
+	}
+	ItemType getType(){
+		return type;
+	}
+};
+
+class PhoenixDownIII: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNIII;
+public:
+	bool canUse(BaseKnight * knight){
+		if(knight -> getHp() < knight -> getMaxHp() / 3)
+			return true;
+		else
+			return false;
+	}
+	void use(BaseKnight * knight){
+		if(knight -> getHp() <= 0)
+			knight -> setHp(knight -> getMaxHp() / 3);
+		else
+			knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 4);
+	}
+	ItemType getType(){
+		return type;
+	}
+};
+
+class PhoenixDownIV: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNIV;
+public:
+	bool canUse(BaseKnight * knight){
+		if(knight -> getHp() < knight -> getMaxHp() / 2)
+			return true;
+		else
+			return false;
+	}
+	void use(BaseKnight * knight){
+		if(knight -> getHp() <= 0)
+			knight -> setHp(knight -> getMaxHp() / 2);
+		else
+			knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 5);
+	}
+	ItemType getType(){
+		return type;
+	}
+};
 /* * * END implementation of class BaseBag * * */
 
 /* * * BEGIN implementation of class BaseKnight * * */
