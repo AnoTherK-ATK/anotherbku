@@ -4,6 +4,13 @@
 #include "main.h"
 
 // #define DEBUG
+class BaseKnight;
+class BaseItem;
+class Events;
+class BaseOpponent;
+class BaseBag;
+class ArmyKnights;
+class KnightAdventure;
 
 enum KnightType { PALADIN = 0, LANCELOT = 1, DRAGON = 2, NORMAL = 3 };
 enum ItemType {ANTIDOTE = 0, PHOENIXDOWNI = 1, PHOENIXDOWNII = 2, PHOENIXDOWNIII = 3, PHOENIXDOWNIV = 4};
@@ -16,36 +23,317 @@ public:
 	virtual ItemType getType() = 0;
 };
 
+struct Node{
+	BaseItem* item;
+	Node* next;
+	Node (BaseItem *it = nullptr){
+		item = it;
+		next = nullptr;
+	}
+};
+
 class BaseBag {
 public:
     virtual bool insertFirst(BaseItem * item) = 0;
     virtual BaseItem * get(ItemType itemType) = 0;
     virtual string toString() const = 0;
+	virtual Node *getHead() = 0;
 };
 
-bool isPrime(int x){
-	if(x < 2) return false;
-	for(int i = 2; i * i <= x; ++i){
-		if(x % i == 0) return false;
+class PaladinBag: public BaseBag{
+private:
+	Node *head;
+	Node *tail;
+	int cnt;
+public:
+	Node *getHead(){
+		return head;
 	}
-	return true;
-}
-
-int sqr(int x){
-	return x * x;
-}
-
-bool isPyth(int x){
-	int arr[3];
-	for(int i = 0; i < 3; ++i){
-		arr[i] = x % 10;
-		x = x / 10;
+	PaladinBag(){
+		head = nullptr;
+		tail = nullptr;
 	}
-	if(sqr(arr[0]) + sqr(arr[1]) == sqrt(arr[2])) return true;
-	if(sqr(arr[0]) + sqr(arr[2]) == sqrt(arr[1])) return true;
-	if(sqr(arr[2]) + sqr(arr[1]) == sqrt(arr[0])) return true;
-	return false;
-}
+	~PaladinBag(){
+		delete head;
+		delete tail;
+	}
+	bool insertFirst(BaseItem *it){
+		Node *tmp = new Node(it);
+		if(tail == nullptr){
+			head = tail = tmp;
+		}else{
+			tmp -> next = head;
+			head = tmp;
+		}
+		++cnt;
+		return true;
+	}
+	BaseItem * get(ItemType itemType){
+		Node *node = head;
+		while(node){
+			if(node -> item -> getType() == itemType){
+				return (node -> item);
+			}
+			node = node -> next;
+		}
+		return NULL;
+	}
+	string toString() const{
+		string ans = "Bag[count=";
+		ans += to_string(cnt);
+		if(cnt == 0){
+			ans += "]";
+			return ans;
+		}else{
+			ans += ";";
+			Node *node = head;
+			while(node){
+				if(node -> item -> getType() == ANTIDOTE){
+					ans += "Antidote";
+				}else if(node -> item -> getType() == PHOENIXDOWNI){
+					ans += "PhoenixDownI";
+				}else if(node -> item -> getType() == PHOENIXDOWNII){
+					ans += "PhoenixDownII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIII){
+					ans += "PhoenixDownIII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIV){
+					ans += "PhoenixDownIV";
+				}
+				if(node -> next != nullptr)
+					ans += ",";
+				else{
+					ans += "]";
+					
+				}
+				node = node -> next;
+			}
+			return ans;
+		}
+	}
+};
+
+class DragonBag: public BaseBag{
+private:
+	Node *head;
+	Node *tail;
+	int cnt;
+public:
+	Node *getHead(){
+		return head;
+	}
+	DragonBag(){
+		head = nullptr;
+		tail = nullptr;
+	}
+	~DragonBag(){
+		delete head;
+		delete tail;
+	}
+	bool insertFirst(BaseItem *it){
+		Node *tmp = new Node(it);
+		if(cnt == 14 || it -> getType() == ANTIDOTE)
+			return false;
+		if(tail == nullptr){
+			head = tail = tmp;
+		}else{
+			tmp -> next = head;
+			head = tmp;
+		}
+		++cnt;
+		return true;
+	}
+	BaseItem * get(ItemType itemType){
+		if(itemType == ANTIDOTE)
+			return nullptr;
+		Node *node = head;
+		while(node){
+			if(node -> item -> getType() == itemType){
+				return (node -> item);
+			}
+			node = node -> next;
+		}
+		return NULL;
+	}
+	string toString() const{
+		string ans = "Bag[count=";
+		ans += to_string(cnt);
+		if(cnt == 0){
+			ans += "]";
+			return ans;
+		}else{
+			ans += ";";
+			Node *node = head;
+			while(node){
+				if(node -> item -> getType() == ANTIDOTE){
+					ans += "Antidote";
+				}else if(node -> item -> getType() == PHOENIXDOWNI){
+					ans += "PhoenixDownI";
+				}else if(node -> item -> getType() == PHOENIXDOWNII){
+					ans += "PhoenixDownII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIII){
+					ans += "PhoenixDownIII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIV){
+					ans += "PhoenixDownIV";
+				}
+				if(node -> next != nullptr)
+					ans += ",";
+				else{
+					ans += "]";
+					
+				}
+				node = node -> next;
+			}
+			return ans;
+		}
+	}
+};
+
+class LancelotBag: public BaseBag{
+private:
+	Node *head;
+	Node *tail;
+	int cnt;
+public:
+	Node *getHead(){
+		return head;
+	}
+	LancelotBag(){
+		head = nullptr;
+		tail = nullptr;
+	}
+	~LancelotBag(){
+		delete head;
+		delete tail;
+	}
+	bool insertFirst(BaseItem *it){
+		Node *tmp = new Node(it);
+		if(cnt == 16)
+			return false;
+		if(tail == nullptr){
+			head = tail = tmp;
+		}else{
+			tmp -> next = head;
+			head = tmp;
+		}
+		++cnt;
+		return true;
+	}
+	BaseItem * get(ItemType itemType){
+		Node *node = head;
+		while(node){
+			if(node -> item -> getType() == itemType){
+				return (node -> item);
+			}
+			node = node -> next;
+		}
+		return NULL;
+	}
+	string toString() const{
+		string ans = "Bag[count=";
+		ans += to_string(cnt);
+		if(cnt == 0){
+			ans += "]";
+			return ans;
+		}else{
+			ans += ";";
+			Node *node = head;
+			while(node){
+				if(node -> item -> getType() == ANTIDOTE){
+					ans += "Antidote";
+				}else if(node -> item -> getType() == PHOENIXDOWNI){
+					ans += "PhoenixDownI";
+				}else if(node -> item -> getType() == PHOENIXDOWNII){
+					ans += "PhoenixDownII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIII){
+					ans += "PhoenixDownIII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIV){
+					ans += "PhoenixDownIV";
+				}
+				if(node -> next != nullptr)
+					ans += ",";
+				else{
+					ans += "]";
+					
+				}
+				node = node -> next;
+			}
+			return ans;
+		}
+	}
+};
+
+class NormalBag: public BaseBag{
+private:
+	Node *head;
+	Node *tail;
+	int cnt;
+public:
+	Node *getHead(){
+		return head;
+	}
+	NormalBag(){
+		head = nullptr;
+		tail = nullptr;
+	}
+	~NormalBag(){
+		delete head;
+		delete tail;
+	}
+	bool insertFirst(BaseItem *it){
+		Node *tmp = new Node(it);
+		if(cnt == 19)
+			return false;
+		if(tail == nullptr){
+			head = tail = tmp;
+		}else{
+			tmp -> next = head;
+			head = tmp;
+		}
+		++cnt;
+		return true;
+	}
+	BaseItem * get(ItemType itemType){
+		Node *node = head;
+		while(node){
+			if(node -> item -> getType() == itemType){
+				return (node -> item);
+			}
+			node = node -> next;
+		}
+		return NULL;
+	}
+	string toString() const{
+		string ans = "Bag[count=";
+		ans += to_string(cnt);
+		if(cnt == 0){
+			ans += "]";
+			return ans;
+		}else{
+			ans += ";";
+			Node *node = head;
+			while(node){
+				if(node -> item -> getType() == ANTIDOTE){
+					ans += "Antidote";
+				}else if(node -> item -> getType() == PHOENIXDOWNI){
+					ans += "PhoenixDownI";
+				}else if(node -> item -> getType() == PHOENIXDOWNII){
+					ans += "PhoenixDownII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIII){
+					ans += "PhoenixDownIII";
+				}else if(node -> item -> getType() == PHOENIXDOWNIV){
+					ans += "PhoenixDownIV";
+				}
+				if(node -> next != nullptr)
+					ans += ",";
+				else{
+					ans += "]";
+				}
+				node = node -> next;
+			}
+			return ans;
+		}
+	}
+};
 
 class BaseKnight {
 protected:
@@ -114,17 +402,27 @@ public:
 	void setHp(int x){
 		hp = min(x, maxhp);
 	}
-	int getAntidote(){
-		return antidote;
-	}
 	int getPhoenixDownI(){
 		return pdI;
 	}
 	KnightType getType(){
 		return knightType;
 	}
-	BaseItem * findPhoenix(){
-		
+	bool heal(){
+		Node *node = bag -> getHead();
+		while(node != nullptr){
+			if(node -> item -> getType() == ANTIDOTE) node = node -> next;
+			else if(!(node -> item -> canUse(this))) node = node -> next;
+			else bag -> get(node -> item -> getType()) -> use(this);
+		}
+		if(node == nullptr){
+			if(gil >= 100){
+				gil -= 100;
+				hp = maxhp / 2;
+				return 1;
+			}else return 0;
+		}
+		return 1;
 	}
     string toString() const;
 	
@@ -141,6 +439,7 @@ public:
 		antidote = x-> getAntidote();
 		level = x -> getLevel();
 		knightType = PALADIN;
+		bag = new PaladinBag();
 	}
 };
 
@@ -155,6 +454,7 @@ public:
 		antidote = x-> getAntidote();
 		level = x -> getLevel();
 		knightType = LANCELOT;
+		bag = new LancelotBag();
 	}
 };
 
@@ -169,6 +469,7 @@ public:
 		antidote = x-> getAntidote();
 		level = x -> getLevel();
 		knightType = DRAGON;
+		bag = new DragonBag();
 	}
 };
 
@@ -183,305 +484,11 @@ public:
 		antidote = x-> getAntidote();
 		level = x -> getLevel();
 		knightType = NORMAL;
+		bag = new NormalBag();
 	}
 };
 
-struct Node{
-	BaseItem* item;
-	Node* next;
-	Node (BaseItem *it){
-		item = it;
-		next = nullptr;
-	}
-};
 
-class PaladinBag: public BaseBag{
-private:
-	Node *head;
-	Node *tail;
-	int cnt;
-public:
-	PaladinBag(){
-		head = nullptr;
-		tail = nullptr;
-	}
-	~PaladinBag(){
-		delete head;
-		delete tail;
-	}
-	bool insertFirst(BaseItem *it){
-		Node *tmp = new Node(it);
-		if(tail == nullptr){
-			head = tail = tmp;
-		}else{
-			tmp -> next = head;
-			head = tmp;
-		}
-		++cnt;
-		return true;
-	}
-	BaseItem * get(ItemType itemType){
-		Node *node = head;
-		while(node){
-			if(node -> item -> getType() == itemType){
-				return (node -> item);
-			}
-			node = node -> next;
-		}
-		return NULL;
-	}
-	string toString() const{
-		string ans = "Bag[count=";
-		ans += to_string(cnt);
-		if(cnt == 0){
-			ans += "]";
-			return ans;
-		}else{
-			ans += ";";
-			Node *node = head;
-			while(node){
-				if(node -> item -> getType() == ANTIDOTE){
-					ans += "Antidote";
-				}else if(node -> item -> getType() == PHOENIXDOWNI){
-					ans += "PhoenixDownI";
-				}else if(node -> item -> getType() == PHOENIXDOWNII){
-					ans += "PhoenixDownII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIII){
-					ans += "PhoenixDownIII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIV){
-					ans += "PhoenixDownIV";
-				}
-				if(node -> next != nullptr)
-					ans += ",";
-				else{
-					ans += "]";
-					return ans;
-				}
-				node = node -> next;
-			}
-		}
-	}
-};
-
-class DragonBag: public BaseBag{
-private:
-	Node *head;
-	Node *tail;
-	int cnt;
-public:
-	DragonBag(){
-		head = nullptr;
-		tail = nullptr;
-	}
-	~DragonBag(){
-		delete head;
-		delete tail;
-	}
-	bool insertFirst(BaseItem *it){
-		Node *tmp = new Node(it);
-		if(cnt == 14 || it -> getType() == ANTIDOTE)
-			return false;
-		if(tail == nullptr){
-			head = tail = tmp;
-		}else{
-			tmp -> next = head;
-			head = tmp;
-		}
-		++cnt;
-		return true;
-	}
-	BaseItem * get(ItemType itemType){
-		if(itemType == ANTIDOTE)
-			return nullptr;
-		Node *node = head;
-		while(node){
-			if(node -> item -> getType() == itemType){
-				return (node -> item);
-			}
-			node = node -> next;
-		}
-		return NULL;
-	}
-	string toString() const{
-		string ans = "Bag[count=";
-		ans += to_string(cnt);
-		if(cnt == 0){
-			ans += "]";
-			return ans;
-		}else{
-			ans += ";";
-			Node *node = head;
-			while(node){
-				if(node -> item -> getType() == ANTIDOTE){
-					ans += "Antidote";
-				}else if(node -> item -> getType() == PHOENIXDOWNI){
-					ans += "PhoenixDownI";
-				}else if(node -> item -> getType() == PHOENIXDOWNII){
-					ans += "PhoenixDownII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIII){
-					ans += "PhoenixDownIII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIV){
-					ans += "PhoenixDownIV";
-				}
-				if(node -> next != nullptr)
-					ans += ",";
-				else{
-					ans += "]";
-					return ans;
-				}
-				node = node -> next;
-			}
-		}
-	}
-};
-
-class LancelotBag: public BaseBag{
-private:
-	Node *head;
-	Node *tail;
-	int cnt;
-public:
-	LancelotBag(){
-		head = nullptr;
-		tail = nullptr;
-	}
-	~LancelotBag(){
-		delete head;
-		delete tail;
-	}
-	bool insertFirst(BaseItem *it){
-		Node *tmp = new Node(it);
-		if(cnt == 16)
-			return false;
-		if(tail == nullptr){
-			head = tail = tmp;
-		}else{
-			tmp -> next = head;
-			head = tmp;
-		}
-		++cnt;
-		return true;
-	}
-	BaseItem * get(ItemType itemType){
-		Node *node = head;
-		while(node){
-			if(node -> item -> getType() == itemType){
-				return (node -> item);
-			}
-			node = node -> next;
-		}
-		return NULL;
-	}
-	string toString() const{
-		string ans = "Bag[count=";
-		ans += to_string(cnt);
-		if(cnt == 0){
-			ans += "]";
-			return ans;
-		}else{
-			ans += ";";
-			Node *node = head;
-			while(node){
-				if(node -> item -> getType() == ANTIDOTE){
-					ans += "Antidote";
-				}else if(node -> item -> getType() == PHOENIXDOWNI){
-					ans += "PhoenixDownI";
-				}else if(node -> item -> getType() == PHOENIXDOWNII){
-					ans += "PhoenixDownII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIII){
-					ans += "PhoenixDownIII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIV){
-					ans += "PhoenixDownIV";
-				}
-				if(node -> next != nullptr)
-					ans += ",";
-				else{
-					ans += "]";
-					return ans;
-				}
-				node = node -> next;
-			}
-		}
-	}
-};
-
-class NormalBag: public BaseBag{
-private:
-	Node *head;
-	Node *tail;
-	int cnt;
-public:
-	NormalBag(){
-		head = nullptr;
-		tail = nullptr;
-	}
-	~NormalBag(){
-		delete head;
-		delete tail;
-	}
-	bool insertFirst(BaseItem *it){
-		Node *tmp = new Node(it);
-		if(cnt == 19)
-			return false;
-		if(tail == nullptr){
-			head = tail = tmp;
-		}else{
-			tmp -> next = head;
-			head = tmp;
-		}
-		++cnt;
-		return true;
-	}
-	BaseItem * get(ItemType itemType){
-		Node *node = head;
-		while(node){
-			if(node -> item -> getType() == itemType){
-				return (node -> item);
-			}
-			node = node -> next;
-		}
-		return NULL;
-	}
-	string toString() const{
-		string ans = "Bag[count=";
-		ans += to_string(cnt);
-		if(cnt == 0){
-			ans += "]";
-			return ans;
-		}else{
-			ans += ";";
-			Node *node = head;
-			while(node){
-				if(node -> item -> getType() == ANTIDOTE){
-					ans += "Antidote";
-				}else if(node -> item -> getType() == PHOENIXDOWNI){
-					ans += "PhoenixDownI";
-				}else if(node -> item -> getType() == PHOENIXDOWNII){
-					ans += "PhoenixDownII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIII){
-					ans += "PhoenixDownIII";
-				}else if(node -> item -> getType() == PHOENIXDOWNIV){
-					ans += "PhoenixDownIV";
-				}
-				if(node -> next != nullptr)
-					ans += ",";
-				else{
-					ans += "]";
-					return ans;
-				}
-				node = node -> next;
-			}
-		}
-	}
-};
-
-int getLvl0(int id, int i){
-	return (i + id) % 10 + 1;
-}
-
-int getDmg(int baseDmg , int lvl, int id, int i){
-	return baseDmg * ((i + id) % 10 + 1 - lvl);
-}
 
 enum OpponentType {
 	MADBEAR = 1, 
@@ -686,6 +693,29 @@ private:
 	bool hasSword = 0;
 	bool win;
 public:
+	bool isPrime(int x){
+		if(x < 2) return false;
+		for(int i = 2; i * i <= x; ++i){
+			if(x % i == 0) return false;
+		}
+		return true;
+	}
+
+	int sqr(int x){
+		return x * x;
+	}
+
+	bool isPyth(int x){
+		int arr[3];
+		for(int i = 0; i < 3; ++i){
+			arr[i] = x % 10;
+			x = x / 10;
+		}
+		if(sqr(arr[0]) + sqr(arr[1]) == sqrt(arr[2])) return true;
+		if(sqr(arr[0]) + sqr(arr[2]) == sqrt(arr[1])) return true;
+		if(sqr(arr[2]) + sqr(arr[1]) == sqrt(arr[0])) return true;
+		return false;
+	}
     ArmyKnights (const string & file_armyknights){
 		ifstream in(file_armyknights);
 		in >> cnt;
@@ -711,7 +741,8 @@ public:
 		in.close();
 	}
     ~ArmyKnights(){
-		delete knightList;
+		for(int i = 0; i < cnt; ++i)
+			delete knightList[i];
 		cnt = 0;
 	}
 
@@ -737,21 +768,21 @@ public:
 		else 
 			return new NormalKnight(knightList[idx]);
 	}
+	int getLvl0(int id, int i){
+		return (i + id) % 10 + 1;
+	}
+
+	int getDmg(int baseDmg , int lvl, int id, int i){
+		return baseDmg * ((i + id) % 10 + 1 - lvl);
+	}
 	int meet1To5(BaseOpponent * opponent, int i, int id){
 		BaseKnight * knight = lastKnight();
 		BaseOpponent * oppo;
-		if(knight -> getLevel() >= getLvl0(id, i))
+		if(knight -> getLevel() >= getLvl0(id, i) || knight -> getType() == LANCELOT || knight -> getType() == DRAGON || knight -> getType() == PALADIN)
 			return opponent -> getGil();
 		else{
-			knight -> setHp(knight -> getHp() - getDmg(opponent -> getBaseDmg(), knight -> getLevel(), id, i));  
-			BaseItem *tmp;
-
-			if(knight -> getGil() >= 100){
-				int tmp = knight -> setGil(-100);
-				knight -> setHp(knight -> getMaxHp() / 2);
-				return 0;
-			}else
-				return -1;
+			if((knight -> heal())) return 0;
+			else return -1;
 		}
 	}
 
@@ -876,7 +907,10 @@ private:
 
 public:
     KnightAdventure();
-    ~KnightAdventure(); // TODO:
+    ~KnightAdventure(){
+		delete armyKnights;
+		delete events;
+	} // TODO:
 
     void loadArmyKnights(const string & name){
 		armyKnights = new ArmyKnights(name);
