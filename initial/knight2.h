@@ -495,6 +495,9 @@ public:
 		}
 		return 1;
 	}
+	bool insertItem(BaseItem *item){
+		return bag -> insertFirst(item);
+	}
     string toString() const;
 
 };
@@ -556,9 +559,6 @@ public:
 		pdI = phoenixdownI;
 		knightType = type;
 		bag = new DragonBag;
-		for(int i = 0; i < antidoted; ++i){
-            bag->insertFirst(new AntiDote());
-		}
 		for(int i = 0; i < phoenixdownI; ++i){
             bag->insertFirst(new PhoenixDownI());
 		}
@@ -843,6 +843,7 @@ public:
 			else{
                 delete knightList[cnt];
                 --cnt;
+				return -1;
 			}
 		}
 	}

@@ -121,8 +121,14 @@ ArmyKnights::ArmyKnights (const string & file_armyknights){
 			knightList[i] = new PaladinKnight(i, hp, lv, gil, antidote, phoenix, PALADIN);
 		else if(hp == 888)
 			knightList[i] = new LancelotKnight(i, hp, lv, gil, antidote, phoenix, LANCELOT);
-		else if(isPyth(hp))
+		else if(isPyth(hp)){
 			knightList[i] = new DragonKnight(i, hp, lv, gil, antidote, phoenix, DRAGON);
+			for(int j = i - 1, k = 0; j >= 1 && k < antidote;){
+				if(knightList[j] -> insertItem(new AntiDote()))
+					++k;
+				else --j;
+			}
+		}
 		else
 			knightList[i] = new NormalKnight(i, hp, lv, gil, antidote, phoenix, NORMAL);
 	}
