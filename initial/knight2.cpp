@@ -1,83 +1,61 @@
 #include "knight2.h"
 
 /* * * BEGIN implementation of class BaseBag * * */
-class PhoenixDownI: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNI;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() <= 0)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		knight -> setHp(knight -> getMaxHp());
-	}
-	ItemType getType(){
-		return type;
-	}
-};
+bool AntiDote::canUse(BaseKnight * knight){
+	if(knight -> getHp() <= 0)
+		return true;
+	else
+		return false;
+}
+void AntiDote::use(BaseKnight * knight){
+	knight -> setHp(knight -> getMaxHp());
+}
 
-class PhoenixDownII: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNII;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() < knight -> getMaxHp() / 4)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		knight -> setHp(knight -> getMaxHp());
-	}
-	ItemType getType(){
-		return type;
-	}
-};
+bool PhoenixDownI::canUse(BaseKnight * knight){
+	if(knight -> getHp() <= 0)
+		return true;
+	else
+		return false;
+}
+void PhoenixDownI::use(BaseKnight * knight){
+	knight -> setHp(knight -> getMaxHp());
+}
 
-class PhoenixDownIII: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNIII;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() < knight -> getMaxHp() / 3)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		if(knight -> getHp() <= 0)
-			knight -> setHp(knight -> getMaxHp() / 3);
-		else
-			knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 4);
-	}
-	ItemType getType(){
-		return type;
-	}
-};
+bool PhoenixDownII::canUse(BaseKnight * knight){
+	if(knight -> getHp() < knight -> getMaxHp() / 4)
+		return true;
+	else
+		return false;
+}
+void PhoenixDownII::use(BaseKnight * knight){
+	knight -> setHp(knight -> getMaxHp());
+}
 
-class PhoenixDownIV: public BaseItem{
-private:
-	ItemType type = PHOENIXDOWNIV;
-public:
-	bool canUse(BaseKnight * knight){
-		if(knight -> getHp() < knight -> getMaxHp() / 2)
-			return true;
-		else
-			return false;
-	}
-	void use(BaseKnight * knight){
-		if(knight -> getHp() <= 0)
-			knight -> setHp(knight -> getMaxHp() / 2);
-		else
-			knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 5);
-	}
-	ItemType getType(){
-		return type;
-	}
-};
+bool PhoenixDownIII::canUse(BaseKnight * knight){
+	if(knight -> getHp() < knight -> getMaxHp() / 3)
+		return true;
+	else
+		return false;
+}
+void PhoenixDownIII::use(BaseKnight * knight){
+	if(knight -> getHp() <= 0)
+		knight -> setHp(knight -> getMaxHp() / 3);
+	else
+		knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 4);
+}
+
+bool PhoenixDownIV::canUse(BaseKnight * knight){
+	if(knight -> getHp() < knight -> getMaxHp() / 2)
+		return true;
+	else
+		return false;
+}
+void PhoenixDownIV::use(BaseKnight * knight){
+	if(knight -> getHp() <= 0)
+		knight -> setHp(knight -> getMaxHp() / 2);
+	else
+		knight -> setHp(knight -> getHp() + knight -> getMaxHp() / 5);
+}
 /* * * END implementation of class BaseBag * * */
 
 /* * * BEGIN implementation of class BaseKnight * * */
@@ -86,8 +64,8 @@ string BaseKnight::toString() const {
     // inefficient version, students can change these code
     //      but the format output must be the same
     string s("");
-    s += "[Knight:id:" + to_string(id) 
-        + ",hp:" + to_string(hp) 
+    s += "[Knight:id:" + to_string(id)
+        + ",hp:" + to_string(hp)
         + ",maxhp:" + to_string(maxhp)
         + ",level:" + to_string(level)
         + ",gil:" + to_string(gil)
@@ -100,6 +78,56 @@ string BaseKnight::toString() const {
 /* * * END implementation of class BaseKnight * * */
 
 /* * * BEGIN implementation of class ArmyKnights * * */
+bool ArmyKnights::isPrime(int x){
+    if(x < 2) return false;
+    for(int i = 2; i * i <= x; ++i){
+        if(x % i == 0) return false;
+    }
+    return true;
+}
+
+int ArmyKnights::sqr(int x){
+    return x * x;
+}
+
+bool ArmyKnights::isPyth(int x){
+    int arr[3];
+    for(int i = 0; i < 3; ++i){
+        arr[i] = x % 10;
+        x = x / 10;
+    }
+    if(sqr(arr[0]) + sqr(arr[1]) == sqrt(arr[2])) return true;
+    if(sqr(arr[0]) + sqr(arr[2]) == sqrt(arr[1])) return true;
+    if(sqr(arr[2]) + sqr(arr[1]) == sqrt(arr[0])) return true;
+    return false;
+}
+
+ArmyKnights::ArmyKnights (const string & file_armyknights){
+	ifstream in(file_armyknights);
+	cout << file_armyknights << '\n';
+	in >> cnt;
+	cout << cnt << '\n';
+	for(int i = 0; i <= cnt + 1; ++i){
+		knightList[i] = new BaseKnight;
+	}
+	for(int i = 1; i <= cnt; ++i){
+		int hp;
+		int lv;
+		int phoenix;
+		int gil;
+		int antidote;
+		in >> hp >> lv >> phoenix >> gil >> antidote;
+		if(isPrime(hp))
+			knightList[i] = new PaladinKnight(i, hp, lv, gil, antidote, phoenix, PALADIN);
+		else if(hp == 888)
+			knightList[i] = new LancelotKnight(i, hp, lv, gil, antidote, phoenix, LANCELOT);
+		else if(isPyth(hp))
+			knightList[i] = new DragonKnight(i, hp, lv, gil, antidote, phoenix, DRAGON);
+		else
+			knightList[i] = new NormalKnight(i, hp, lv, gil, antidote, phoenix, NORMAL);
+	}
+	in.close();
+}
 void ArmyKnights::printInfo() const {
     cout << "No. knights: " << this->count();
     if (this->count() > 0) {

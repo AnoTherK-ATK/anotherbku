@@ -23,6 +23,68 @@ public:
 	virtual ItemType getType() = 0;
 };
 
+class AntiDote: public BaseItem{
+private:
+	ItemType type = ANTIDOTE;
+public:
+	AntiDote (){}
+	//this is fake
+	bool canUse(BaseKnight * knight);
+	void use(BaseKnight * knight);
+	//this is real
+	ItemType getType(){
+		return type;
+	}
+};
+
+class PhoenixDownI: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNI;
+public:
+	PhoenixDownI(){}
+	bool canUse(BaseKnight * knight);
+	void use(BaseKnight * knight);
+	ItemType getType(){
+		return type;
+	}
+};
+
+class PhoenixDownII: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNII;
+public:
+	PhoenixDownII(){}
+	bool canUse(BaseKnight * knight);
+	void use(BaseKnight * knight);
+	ItemType getType(){
+		return type;
+	}
+};
+
+class PhoenixDownIII: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNIII;
+public:
+	PhoenixDownIII(){}
+	bool canUse(BaseKnight * knight);
+	void use(BaseKnight * knight);
+	ItemType getType(){
+		return type;
+	}
+};
+
+class PhoenixDownIV: public BaseItem{
+private:
+	ItemType type = PHOENIXDOWNIV;
+public:
+	PhoenixDownIV(){}
+	bool canUse(BaseKnight * knight);
+	void use(BaseKnight * knight);
+	ItemType getType(){
+		return type;
+	}
+};
+
 struct Node{
 	BaseItem* item;
 	Node* next;
@@ -103,7 +165,7 @@ public:
 					ans += ",";
 				else{
 					ans += "]";
-					
+
 				}
 				node = node -> next;
 			}
@@ -179,7 +241,7 @@ public:
 					ans += ",";
 				else{
 					ans += "]";
-					
+
 				}
 				node = node -> next;
 			}
@@ -253,7 +315,7 @@ public:
 					ans += ",";
 				else{
 					ans += "]";
-					
+
 				}
 				node = node -> next;
 			}
@@ -358,15 +420,21 @@ public:
 		pdI = 0;
 		bag = nullptr;
 	}
-    BaseKnight(int id, int maxhp, int level, int gild, int antidote, int phoenixdownI, KnightType type){
-		id = id;
-		maxhp = maxhp;
-		hp = maxhp;
+    BaseKnight(int idd, int maxhpd, int leveld, int gild, int antidoted, int phoenixdownI, KnightType type){
+		id = idd;
+		maxhp = maxhpd;
+		hp = maxhpd;
 		gil = gild;
-		antidote;
-		level = level;
+		antidote = antidoted;
+		level = leveld;
 		pdI = phoenixdownI;
 		knightType = type;
+		for(int i = 0; i < antidoted; ++i){
+            bag->insertFirst(new AntiDote());
+		}
+		for(int i = 0; i < phoenixdownI; ++i){
+            bag->insertFirst(new PhoenixDownI());
+		}
 	}
 	int getId(){
 		return id;
@@ -413,7 +481,10 @@ public:
 		while(node != nullptr){
 			if(node -> item -> getType() == ANTIDOTE) node = node -> next;
 			else if(!(node -> item -> canUse(this))) node = node -> next;
-			else bag -> get(node -> item -> getType()) -> use(this);
+			//else bag -> get(node -> item -> getType()) -> use(this);
+			else{
+				node -> item -> use(this);
+			}
 		}
 		if(node == nullptr){
 			if(gil >= 100){
@@ -425,82 +496,110 @@ public:
 		return 1;
 	}
     string toString() const;
-	
+
 };
 
 class PaladinKnight: public BaseKnight{
 private:
 public:
-	PaladinKnight(BaseKnight * x){
-		id = x -> getId();
-		maxhp = x -> getMaxHp();
-		hp = x -> getHp();
-		gil = x -> getGil();
-		antidote = x-> getAntidote();
-		level = x -> getLevel();
-		knightType = PALADIN;
-		bag = new PaladinBag();
+	PaladinKnight(int idd, int maxhpd, int leveld, int gild, int antidoted, int phoenixdownI, KnightType type){
+		id = idd;
+		maxhp = maxhpd;
+		hp = maxhpd;
+		gil = gild;
+		antidote = antidoted;
+		level = leveld;
+		pdI = phoenixdownI;
+		knightType = type;
+		bag = new PaladinBag;
+		for(int i = 0; i < antidoted; ++i){
+            bag->insertFirst(new AntiDote());
+		}
+		for(int i = 0; i < phoenixdownI; ++i){
+            bag->insertFirst(new PhoenixDownI());
+		}
 	}
 };
 
 class LancelotKnight: public BaseKnight{
 private:
 public:
-	LancelotKnight(BaseKnight * x){	
-		id = x -> getId();
-		maxhp = x -> getMaxHp();
-		hp = x -> getHp();
-		gil = x -> getGil();
-		antidote = x-> getAntidote();
-		level = x -> getLevel();
-		knightType = LANCELOT;
-		bag = new LancelotBag();
+	LancelotKnight(int idd, int maxhpd, int leveld, int gild, int antidoted, int phoenixdownI, KnightType type){
+		id = idd;
+		maxhp = maxhpd;
+		hp = maxhpd;
+		gil = gild;
+		antidote = antidoted;
+		level = leveld;
+		pdI = phoenixdownI;
+		knightType = type;
+		bag = new LancelotBag;
+		for(int i = 0; i < antidoted; ++i){
+            bag->insertFirst(new AntiDote());
+		}
+		for(int i = 0; i < phoenixdownI; ++i){
+            bag->insertFirst(new PhoenixDownI());
+		}
 	}
 };
 
 class DragonKnight: public BaseKnight{
 private:
 public:
-	DragonKnight(BaseKnight * x){
-		id = x -> getId();
-		maxhp = x -> getMaxHp();
-		hp = x -> getHp();
-		gil = x -> getGil();
-		antidote = x-> getAntidote();
-		level = x -> getLevel();
-		knightType = DRAGON;
-		bag = new DragonBag();
+	DragonKnight(int idd, int maxhpd, int leveld, int gild, int antidoted, int phoenixdownI, KnightType type){
+		id = idd;
+		maxhp = maxhpd;
+		hp = maxhpd;
+		gil = gild;
+		antidote = antidoted;
+		level = leveld;
+		pdI = phoenixdownI;
+		knightType = type;
+		bag = new DragonBag;
+		for(int i = 0; i < antidoted; ++i){
+            bag->insertFirst(new AntiDote());
+		}
+		for(int i = 0; i < phoenixdownI; ++i){
+            bag->insertFirst(new PhoenixDownI());
+		}
 	}
 };
 
 class NormalKnight: public BaseKnight{
 private:
 public:
-	NormalKnight(BaseKnight * x){
-		id = x -> getId();
-		maxhp = x -> getMaxHp();
-		hp = x -> getHp();
-		gil = x -> getGil();
-		antidote = x-> getAntidote();
-		level = x -> getLevel();
-		knightType = NORMAL;
-		bag = new NormalBag();
+	NormalKnight(int idd, int maxhpd, int leveld, int gild, int antidoted, int phoenixdownI, KnightType type){
+		id = idd;
+		maxhp = maxhpd;
+		hp = maxhpd;
+		gil = gild;
+		antidote = antidoted;
+		level = leveld;
+		pdI = phoenixdownI;
+		knightType = type;
+		bag = new NormalBag;
+		for(int i = 0; i < antidoted; ++i){
+            bag->insertFirst(new AntiDote());
+		}
+		for(int i = 0; i < phoenixdownI; ++i){
+            bag->insertFirst(new PhoenixDownI());
+		}
 	}
 };
 
 
 
 enum OpponentType {
-	MADBEAR = 1, 
+	MADBEAR = 1,
 	BANDIT = 2,
-	LORDLUPIN = 3, 
-	ELF = 4, 
-	TROLL = 5, 
-	TORNBERY = 6, 
-	CARDSQUEEN = 7, 
-	NINA = 8, 
-	DURIAN = 9, 
-	OMEGA = 10, 
+	LORDLUPIN = 3,
+	ELF = 4,
+	TROLL = 5,
+	TORNBERY = 6,
+	CARDSQUEEN = 7,
+	NINA = 8,
+	DURIAN = 9,
+	OMEGA = 10,
 	HADES = 11,
 	ULTIMECIA = 99
 };
@@ -666,8 +765,10 @@ public:
 		return eventList[i];
 	}
 	Events ( const string & file_events ){
+		cout << file_events << '\n';
 		ifstream in(file_events);
 		in >> cnt;
+		cout << cnt << '\n';
 		eventList = new int[cnt];
 		for(int i = 0; i < cnt; ++i){
 			int x;
@@ -675,6 +776,10 @@ public:
 			eventList[i] = x;
 		}
 		in.close();
+		for(int i = 0; i < cnt; ++i){
+			cout << eventList[i] << ' ';
+		}
+		cout << '\n';
 	}
 	~Events(){
 		delete eventList;
@@ -693,61 +798,19 @@ private:
 	bool hasSword = 0;
 	bool win;
 public:
-	bool isPrime(int x){
-		if(x < 2) return false;
-		for(int i = 2; i * i <= x; ++i){
-			if(x % i == 0) return false;
-		}
-		return true;
-	}
+	bool isPrime(int x);
+	int sqr(int x);
+	bool isPyth(int x);
+    ArmyKnights (const string & file_armyknights);
 
-	int sqr(int x){
-		return x * x;
-	}
-
-	bool isPyth(int x){
-		int arr[3];
-		for(int i = 0; i < 3; ++i){
-			arr[i] = x % 10;
-			x = x / 10;
-		}
-		if(sqr(arr[0]) + sqr(arr[1]) == sqrt(arr[2])) return true;
-		if(sqr(arr[0]) + sqr(arr[2]) == sqrt(arr[1])) return true;
-		if(sqr(arr[2]) + sqr(arr[1]) == sqrt(arr[0])) return true;
-		return false;
-	}
-    ArmyKnights (const string & file_armyknights){
-		ifstream in(file_armyknights);
-		in >> cnt;
-		for(int i = 0; i <= cnt + 1; ++i){
-			knightList[i] = new BaseKnight;
-		}
-		for(int i = 1; i <= cnt; ++i){
-			int hp;
-			int lv;
-			int phoenix;
-			int gil;
-			int antidote;
-			in >> hp >> lv >> phoenix >> gil >> antidote;
-			if(isPrime(hp))
-				knightList[i] = new BaseKnight(i, hp, lv, gil, antidote, phoenix, PALADIN);
-			else if(hp == 888)
-				knightList[i] = new BaseKnight(i, hp, lv, gil, antidote, phoenix, LANCELOT);
-			else if(isPyth(hp))
-				knightList[i] = new BaseKnight(i, hp, lv, gil, antidote, phoenix, DRAGON);
-			else
-				knightList[i] = new BaseKnight(i, hp, lv, gil, antidote, phoenix, NORMAL);
-		}
-		in.close();
-	}
     ~ArmyKnights(){
-		for(int i = 0; i < cnt; ++i)
+		for(int i = 0; i <= cnt + 1; ++i)
 			delete knightList[i];
 		cnt = 0;
 	}
 
 	void addGil(int x){
-		for(int i = cnt - 1; i >= 0; --i){
+		for(int i = cnt; i >= 1; --i){
 			x = knightList[i] -> setGil(x);
 			if(x == 0){
 				break;
@@ -755,18 +818,13 @@ public:
 		}
 	}
 
+    void printInfo() const;
+    void printResult(bool win) const;
+
 	BaseKnight * lastKnight() const{
-		if(cnt == 0)
-			return nullptr;
-		int idx = cnt - 1;
-		if(knightList[idx] -> getType() == PALADIN)
-			return new PaladinKnight(knightList[idx]);
-		else if(knightList[idx] -> getType() == DRAGON)
-			return new DragonKnight(knightList[idx]);
-		else if(knightList[idx] -> getType() == LANCELOT)
-			return new LancelotKnight(knightList[idx]);
-		else 
-			return new NormalKnight(knightList[idx]);
+	    if(cnt == 0)
+            return nullptr;
+        else return knightList[cnt];
 	}
 	int getLvl0(int id, int i){
 		return (i + id) % 10 + 1;
@@ -782,7 +840,10 @@ public:
 			return opponent -> getGil();
 		else{
 			if((knight -> heal())) return 0;
-			else return -1;
+			else{
+                delete knightList[cnt];
+                --cnt;
+			}
 		}
 	}
 
@@ -819,10 +880,11 @@ public:
 				addGil(gil);
 				return 1;
 			}else return 0;
-		}
+		}return 0;
 	}
     bool adventure (Events *events){
 		for(int event = 0; event < events -> count(); ++event){
+			cout << "event " << event << ": " << events -> get(event) << '\n';
 			if(events -> get(event) == 1){
 				bool ok = fight(new MadBear, event, events -> get(event));
 				if(!ok){
@@ -870,13 +932,13 @@ public:
 				bool ok = meetUltimecia();
 				if(ok)
 					defeatUlti = 1;
-				else 
+				else
 					defeatUlti = -1;
 			}
 			printInfo();
 		}
 		if(defeatUlti == 1) return true;
-		else if(defeatUlti == -1) return false;
+		else return false;
 	}
     int count() const{
 		return cnt;
@@ -896,8 +958,6 @@ public:
 		return hasSword;
 	}
 
-    void printInfo() const;
-    void printResult(bool win) const;
 };
 
 class KnightAdventure {
@@ -919,9 +979,8 @@ public:
 		events = new Events(name);
 	}
     void run(){
-		for(int i = 0; i < events -> count(); ++i){
-
-		}
+		bool ok = armyKnights -> adventure(events);
+		armyKnights -> printResult(ok);
 	}
 };
 
