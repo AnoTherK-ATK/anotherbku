@@ -2,13 +2,10 @@
 
 /* * * BEGIN implementation of class BaseBag * * */
 bool AntiDote::canUse(BaseKnight * knight){
-	if(knight -> getHp() <= 0)
-		return true;
-	else
-		return false;
+    return (knight -> getType() == DRAGON && knight -> getPoison());
 }
 void AntiDote::use(BaseKnight * knight){
-	knight -> setHp(knight -> getMaxHp());
+	knight -> setPoison(0);
 }
 
 bool PhoenixDownI::canUse(BaseKnight * knight){
@@ -96,9 +93,9 @@ bool ArmyKnights::isPyth(int x){
         arr[i] = x % 10;
         x = x / 10;
     }
-    if(sqr(arr[0]) + sqr(arr[1]) == sqrt(arr[2])) return true;
-    if(sqr(arr[0]) + sqr(arr[2]) == sqrt(arr[1])) return true;
-    if(sqr(arr[2]) + sqr(arr[1]) == sqrt(arr[0])) return true;
+    if(sqr(arr[0]) + sqr(arr[1]) == sqr(arr[2])) return true;
+    if(sqr(arr[0]) + sqr(arr[2]) == sqr(arr[1])) return true;
+    if(sqr(arr[2]) + sqr(arr[1]) == sqr(arr[0])) return true;
     return false;
 }
 

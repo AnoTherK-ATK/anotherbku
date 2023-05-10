@@ -8,17 +8,18 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "s:/code/anotherbku",
-      "program": "s:/code/anotherbku/build/Debug/outDebug",
+      "cwd": "S:/code/anotherbku/initial",
+      "program": "S:/code/anotherbku/initial/main.exe",
       "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
+      "miDebuggerPath": "C:/Program Files/CodeBlocks/MinGW/bin/gdb.exe",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "preLaunchTask": "C/C++: g++.exe build active file"
     }
   ]
 }

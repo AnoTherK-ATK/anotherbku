@@ -100,6 +100,7 @@ public:
     virtual BaseItem * get(ItemType itemType) = 0;
     virtual string toString() const = 0;
 	virtual Node *getHead() = 0;
+	virtual void use(BaseItem *it, BaseKnight *knight) = 0;
 };
 
 class PaladinBag: public BaseBag{
@@ -171,6 +172,21 @@ public:
 			}
 			return ans;
 		}
+	}
+	void use(BaseItem *it, BaseKnight *knight){
+        Node *node = head;
+        Node *prev = nullptr;
+        while(node != nullptr){
+            if(node -> item -> getType() == it -> getType()){
+                node -> item-> use(knight);
+                prev -> next = node -> next;
+                node = nullptr;
+                --cnt;
+                break;
+            }
+            prev = node;
+            node = node -> next;
+        }
 	}
 };
 
@@ -248,6 +264,21 @@ public:
 			return ans;
 		}
 	}
+	void use(BaseItem *it, BaseKnight *knight){
+        Node *node = head;
+        Node *prev = nullptr;
+        while(node != nullptr){
+            if(node -> item -> getType() == it -> getType()){
+                node -> item-> use(knight);
+                prev -> next = node -> next;
+                node = nullptr;
+                --cnt;
+                break;
+            }
+            prev = node;
+            node = node -> next;
+        }
+	}
 };
 
 class LancelotBag: public BaseBag{
@@ -322,6 +353,21 @@ public:
 			return ans;
 		}
 	}
+	void use(BaseItem *it, BaseKnight *knight){
+        Node *node = head;
+        Node *prev = nullptr;
+        while(node != nullptr){
+            if(node -> item -> getType() == it -> getType()){
+                node -> item-> use(knight);
+                prev -> next = node -> next;
+                node = nullptr;
+                --cnt;
+                break;
+            }
+            prev = node;
+            node = node -> next;
+        }
+	}
 };
 
 class NormalBag: public BaseBag{
@@ -395,6 +441,21 @@ public:
 			return ans;
 		}
 	}
+	void use(BaseItem *it, BaseKnight *knight){
+        Node *node = head;
+        Node *prev = nullptr;
+        while(node != nullptr){
+            if(node -> item -> getType() == it -> getType()){
+                node -> item-> use(knight);
+                prev -> next = node -> next;
+                node = nullptr;
+                --cnt;
+                break;
+            }
+            prev = node;
+            node = node -> next;
+        }
+	}
 };
 
 class BaseKnight {
@@ -406,6 +467,7 @@ protected:
     int gil;
     int antidote;
 	int pdI;
+	bool isPoison;
     BaseBag * bag;
     KnightType knightType;
 
@@ -429,6 +491,7 @@ public:
 		level = leveld;
 		pdI = phoenixdownI;
 		knightType = type;
+		isPoison = 0;
 		for(int i = 0; i < antidoted; ++i){
             bag->insertFirst(new AntiDote());
 		}
@@ -457,6 +520,12 @@ public:
 	int getAntidote(){
 		return antidote;
 	}
+    bool getPoison(){
+        return isPoison;
+    }
+    void setPoison(bool status){
+        isPoison = status;
+    }
 	int setGil(int x){
 		if (x > 999){
 			x -= 999;
@@ -476,6 +545,13 @@ public:
 	KnightType getType(){
 		return knightType;
 	}
+    bool useItem(BaseItem *item){
+        if(item -> canUse(this)){
+            bag -> use(item, this);
+            return 1;
+        }
+        return 0;
+    }
 	bool heal(){
 		Node *node = bag -> getHead();
 		while(node != nullptr){
@@ -483,7 +559,7 @@ public:
 			else if(!(node -> item -> canUse(this))) node = node -> next;
 			//else bag -> get(node -> item -> getType()) -> use(this);
 			else{
-				node -> item -> use(this);
+				bag -> use(node -> item, this);
 			}
 		}
 		if(node == nullptr){
@@ -515,6 +591,7 @@ public:
 		pdI = phoenixdownI;
 		knightType = type;
 		bag = new PaladinBag;
+		isPoison = 0;
 		for(int i = 0; i < antidoted; ++i){
             bag->insertFirst(new AntiDote());
 		}
@@ -586,8 +663,6 @@ public:
 		}
 	}
 };
-
-
 
 enum OpponentType {
 	MADBEAR = 1,
@@ -811,11 +886,18 @@ public:
 
 	void addGil(int x){
 		for(int i = cnt; i >= 1; --i){
-			x = knightList[i] -> setGil(x);
+			x = knightList[i] -> setGil(knightList[i] -> getGil() +x);
 			if(x == 0){
 				break;
 			}
 		}
+	}
+
+	void addItem(BaseItem *item){
+        for(int i = cnt; i >= 1; --i){
+            if(knightList[i] -> insertItem(item))
+                break;
+        }
 	}
 
     void printInfo() const;
