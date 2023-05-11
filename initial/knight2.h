@@ -101,6 +101,7 @@ public:
     virtual string toString() const = 0;
 	virtual Node *getHead() = 0;
 	virtual void use(BaseItem *it, BaseKnight *knight) = 0;
+	virtual void revPoison() = 0;
 };
 
 class PaladinBag: public BaseBag{
@@ -113,6 +114,7 @@ public:
 		return head;
 	}
 	PaladinBag(){
+	    cnt = 0;
 		head = nullptr;
 		tail = nullptr;
 	}
@@ -145,7 +147,7 @@ public:
 		string ans = "Bag[count=";
 		ans += to_string(cnt);
 		if(cnt == 0){
-			ans += "]";
+			ans += ";]";
 			return ans;
 		}else{
 			ans += ";";
@@ -188,6 +190,15 @@ public:
             node = node -> next;
         }
 	}
+	void revPoison(){
+        int cnt = 0;
+        while(head != nullptr && cnt < 3){
+            Node *tmp = head;
+            head = head -> next;
+            delete tmp;
+            ++cnt;
+        }
+	}
 };
 
 class DragonBag: public BaseBag{
@@ -200,6 +211,7 @@ public:
 		return head;
 	}
 	DragonBag(){
+	    cnt = 0;
 		head = nullptr;
 		tail = nullptr;
 	}
@@ -236,7 +248,7 @@ public:
 		string ans = "Bag[count=";
 		ans += to_string(cnt);
 		if(cnt == 0){
-			ans += "]";
+			ans += ";]";
 			return ans;
 		}else{
 			ans += ";";
@@ -279,6 +291,15 @@ public:
             node = node -> next;
         }
 	}
+    void revPoison(){
+        int cnt = 0;
+        while(head != nullptr && cnt < 3){
+            Node *tmp = head;
+            head = head -> next;
+            delete tmp;
+            ++cnt;
+        }
+	}
 };
 
 class LancelotBag: public BaseBag{
@@ -291,6 +312,7 @@ public:
 		return head;
 	}
 	LancelotBag(){
+	    cnt = 0;
 		head = nullptr;
 		tail = nullptr;
 	}
@@ -325,7 +347,7 @@ public:
 		string ans = "Bag[count=";
 		ans += to_string(cnt);
 		if(cnt == 0){
-			ans += "]";
+			ans += ";]";
 			return ans;
 		}else{
 			ans += ";";
@@ -368,6 +390,15 @@ public:
             node = node -> next;
         }
 	}
+	void revPoison(){
+        int cnt = 0;
+        while(head != nullptr && cnt < 3){
+            Node *tmp = head;
+            head = head -> next;
+            delete tmp;
+            ++cnt;
+        }
+	}
 };
 
 class NormalBag: public BaseBag{
@@ -380,6 +411,7 @@ public:
 		return head;
 	}
 	NormalBag(){
+	    cnt = 0;
 		head = nullptr;
 		tail = nullptr;
 	}
@@ -414,7 +446,7 @@ public:
 		string ans = "Bag[count=";
 		ans += to_string(cnt);
 		if(cnt == 0){
-			ans += "]";
+			ans += ";]";
 			return ans;
 		}else{
 			ans += ";";
@@ -443,17 +475,31 @@ public:
 	}
 	void use(BaseItem *it, BaseKnight *knight){
         Node *node = head;
-        Node *prev = nullptr;
+        Node *prev = head;
         while(node != nullptr){
             if(node -> item -> getType() == it -> getType()){
                 node -> item-> use(knight);
-                prev -> next = node -> next;
+                //prev -> next = node -> next;
+                if(node == head){
+                    head = node -> next;
+                }else{
+                    prev -> next = node -> next;
+                }
                 node = nullptr;
                 --cnt;
                 break;
             }
             prev = node;
             node = node -> next;
+        }
+	}
+	void revPoison(){
+        int cnt = 0;
+        while(head != nullptr && cnt < 3){
+            Node *tmp = head;
+            head = head -> next;
+            delete tmp;
+            ++cnt;
         }
 	}
 };
@@ -560,6 +606,7 @@ public:
 			//else bag -> get(node -> item -> getType()) -> use(this);
 			else{
 				bag -> use(node -> item, this);
+				return 1;
 			}
 		}
 		if(node == nullptr){
@@ -573,6 +620,9 @@ public:
 	}
 	bool insertItem(BaseItem *item){
 		return bag -> insertFirst(item);
+	}
+	void rePoison(){
+        bag -> revPoison();
 	}
     string toString() const;
 
@@ -802,6 +852,24 @@ public:
 	}
 };
 
+class TornBery: public BaseOpponent{
+private:
+    OpponentType type;
+public:
+    TornBery(){
+        type = TORNBERY;
+    }
+    int getType(){
+		return type;
+	}
+	int getBaseDmg(){
+		return 0;
+	}
+	int getGil(){
+		return 0;
+	}
+};
+
 class Ultimecia: public BaseOpponent{
 private:
 	int hp;
@@ -840,10 +908,10 @@ public:
 		return eventList[i];
 	}
 	Events ( const string & file_events ){
-		cout << file_events << '\n';
+		//cout << file_events << '\n';
 		ifstream in(file_events);
 		in >> cnt;
-		cout << cnt << '\n';
+		//cout << cnt << '\n';
 		eventList = new int[cnt];
 		for(int i = 0; i < cnt; ++i){
 			int x;
@@ -851,10 +919,10 @@ public:
 			eventList[i] = x;
 		}
 		in.close();
-		for(int i = 0; i < cnt; ++i){
-			cout << eventList[i] << ' ';
-		}
-		cout << '\n';
+		// for(int i = 0; i < cnt; ++i){
+		// 	cout << eventList[i] << ' ';
+		// }
+		// cout << '\n';
 	}
 	~Events(){
 		delete eventList;
@@ -879,7 +947,7 @@ public:
     ArmyKnights (const string & file_armyknights);
 
     ~ArmyKnights(){
-		for(int i = 0; i <= cnt + 1; ++i)
+		for(int i = 1; i <= cnt; ++i)
 			delete knightList[i];
 		cnt = 0;
 	}
@@ -917,30 +985,56 @@ public:
 	}
 	int meet1To5(BaseOpponent * opponent, int i, int id){
 		BaseKnight * knight = lastKnight();
-		BaseOpponent * oppo;
-		if(knight -> getLevel() >= getLvl0(id, i) || knight -> getType() == LANCELOT || knight -> getType() == DRAGON || knight -> getType() == PALADIN)
+		if(knight -> getLevel() >= getLvl0(id, i) || knight -> getType() == LANCELOT || knight -> getType() == PALADIN)
 			return opponent -> getGil();
 		else{
+            knight -> setHp(knight -> getHp() - opponent -> getBaseDmg() * (getLvl0(id, i) - knight -> getLevel()));
 			if((knight -> heal())) return 0;
 			else{
-                delete knightList[cnt];
-                --cnt;
+                delete knightList[cnt--];
 				return -1;
 			}
 		}
 	}
 
+	int meetTornBery(BaseOpponent *opponent, int i, int id){
+        BaseKnight *knight = lastKnight();
+        if(knight -> getLevel() >= getLvl0(id, i)){
+            knight -> setLevel(knight -> getLevel() + 1);
+            return 1;
+        }else{
+            knight -> setPoison(!knight -> getPoison());
+            if(knight -> getType() == DRAGON){
+                knight -> setPoison(!knight -> getPoison());
+                return 0;
+            }
+            if(knight -> useItem(new AntiDote))
+                return 0;
+            knight -> rePoison();
+            knight -> setHp(knight -> getHp() - 10);
+            if(knight -> heal()){
+                knight -> setPoison(!knight -> getPoison());
+                return 0;
+            }
+            delete knightList[cnt--];
+            return -1;
+        }
+	}
+
 	bool meetUltimecia(){
 		Ultimecia *opponent = new Ultimecia();
-		if(hasSword)
+		if(hasSword){
+            delete opponent;
 			return 1;
-		if(!(hasHair && hasLance && hasSheild))
+		}
+		if(!(hasHair && hasLance && hasSheild)){
+			delete opponent;
 			return 0;
+		}
 		while(lastKnight() != nullptr && opponent -> getHp() > 0){
 			BaseKnight *knight = lastKnight();
 			if(knight -> getType() == NORMAL){
-				--cnt;
-				delete knightList[cnt];
+				delete knightList[cnt--];
 			}else{
 				double base[3] = {0.06, 0.05, 0.075};
 				int dmg = (int)(base[knight -> getType()] * (1.0 * knight -> getLevel()) * (1.0 * knight -> getHp()));
@@ -951,9 +1045,11 @@ public:
 				}
 			}
 		}
-		if(opponent -> getHp() > 0 || cnt == 0)
+		if(opponent -> getHp() > 0 || cnt == 0){
+            delete opponent;
 			return 0;
-		else return 1;
+        }
+		else {delete opponent; return 1;}
 	}
 
     bool fight(BaseOpponent * opponent, int i, int id){
@@ -963,42 +1059,29 @@ public:
 				addGil(gil);
 				return 1;
 			}else return 0;
-		}return 0;
+		}
+		if(id == 6){
+            int res = meetTornBery(opponent, i, id);
+            return (res >= 0);
+        }
+        return 0;
 	}
     bool adventure (Events *events){
 		for(int event = 0; event < events -> count(); ++event){
-			cout << "event " << event << ": " << events -> get(event) << '\n';
+			//cout << "event " << event << ": " << events -> get(event) << '\n';
 			if(events -> get(event) == 1){
 				bool ok = fight(new MadBear, event, events -> get(event));
-				if(!ok){
-					--cnt;
-					delete knightList[cnt];
-				}
 			}
 			else if(events -> get(event) == 2){
 				bool ok = fight(new Bandit, event, events -> get(event));
-				if(!ok){
-					--cnt;
-					delete knightList[cnt];
-				}
 			}else if(events -> get(event) == 3){
 				bool ok = fight(new LordLupin, event, events -> get(event));
-				if(!ok){
-					--cnt;
-					delete knightList[cnt];
-				}
 			}else if(events -> get(event) == 4){
 				bool ok = fight(new Elf, event, events -> get(event));
-				if(!ok){
-					--cnt;
-					delete knightList[cnt];
-				}
 			}else if(events -> get(event) == 5){
 				bool ok = fight(new Troll, event, events -> get(event));
-				if(!ok){
-					--cnt;
-					delete knightList[cnt];
-				}
+			}else if(events -> get(event) == 6){
+			    bool ok = fight(new TornBery, event, events -> get(event));
 			}else if(events -> get(event) == 95){
 				if(!hasSheild)
 					hasSheild = 1;

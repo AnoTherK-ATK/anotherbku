@@ -2,7 +2,7 @@
 
 /* * * BEGIN implementation of class BaseBag * * */
 bool AntiDote::canUse(BaseKnight * knight){
-    return (knight -> getType() == DRAGON && knight -> getPoison());
+    return (knight -> getPoison());
 }
 void AntiDote::use(BaseKnight * knight){
 	knight -> setPoison(0);
@@ -101,10 +101,10 @@ bool ArmyKnights::isPyth(int x){
 
 ArmyKnights::ArmyKnights (const string & file_armyknights){
 	ifstream in(file_armyknights);
-	cout << file_armyknights << '\n';
+	//cout << file_armyknights << '\n';
 	in >> cnt;
-	cout << cnt << '\n';
-	for(int i = 0; i <= cnt + 1; ++i){
+	//cout << cnt << '\n';
+	for(int i = 1; i <= cnt; ++i){
 		knightList[i] = new BaseKnight;
 	}
 	for(int i = 1; i <= cnt; ++i){
